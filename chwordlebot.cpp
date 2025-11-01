@@ -33,10 +33,9 @@ public:
     /// Converts all lowercase characters to uppercase characters.
     WordCollection (std::istream& in) {
         std::string temp;
+        in >> temp;
         while (in) {
-            in >> temp;
             if (temp.length () == WORD_LENGTH) {
-                assert (m_possibleWords.count (temp) == 0);
                 bool good = true;
                 for (unsigned short index = 0; index < WORD_LENGTH; ++index) {
                     if (std::islower (temp[index])) {
@@ -44,8 +43,12 @@ public:
                     }
                     else if (!std::isalpha (temp[index])) { good = false; }
                 }
-                if (good) { m_possibleWords.insert (temp); }
+                if (good) {
+                    assert (m_possibleWords.count (temp) == 0);
+                    m_possibleWords.insert (temp);
+                }
             }
+            in >> temp;
         }
     }
 
@@ -342,6 +345,10 @@ main (int argc, char* argv[]) {
 
     while (true) {
         ++numGuesses;
+        if (words.m_possibleWords.empty ()) {
+            std::cout << "Either your word is not in my dictionary, or you made a mistake.\n";
+            break;
+        }
         std::string current_guess = words.bestWord ();
         std::cout << "You should guess " << current_guess << "\n";
         std::cout << "Enter a response like GYWWG: ";
